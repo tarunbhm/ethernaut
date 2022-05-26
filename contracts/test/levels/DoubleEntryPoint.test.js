@@ -2,6 +2,7 @@ const DoubleEntryPoint = artifacts.require('./levels/DoubleEntryPoint.sol')
 const DoubleEntryPointFactory = artifacts.require('./levels/DoubleEntryPointFactory.sol')
 const DetectionBot = artifacts.require('./attacks/DetectionBot.sol')
 const Forta = artifacts.require('./levels/Forta.sol')
+const LegacyToken = artifacts.require('./levels/LegacyToken.sol')
 
 const Ethernaut = artifacts.require('./Ethernaut.sol')
 const { web3 } = require('openzeppelin-test-helpers/src/setup')
@@ -40,9 +41,11 @@ contract('DoubleEntryPoint', function(accounts) {
 
     const fortaAddress = await instance.forta();
 
+    const cryptoVaultAddress = await instance.cryptoVault();
+
     const fortaContract = await Forta.at(fortaAddress);
     
-    const detectionBot = await DetectionBot.new(fortaAddress, {from: player});
+    const detectionBot = await DetectionBot.new(fortaAddress, cryptoVaultAddress, {from: player});
 
     await fortaContract.setDetectionBot(detectionBot.address, {from: player});
 
@@ -52,7 +55,7 @@ contract('DoubleEntryPoint', function(accounts) {
       instance.address,
       player
     )
-
+    
     assert.isTrue(completed)
   });
 
